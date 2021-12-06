@@ -1,0 +1,108 @@
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+
+  <style>
+  .card {
+   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5),
+               0 3px 10px 0 rgba(0,0,0,0.39);
+   background: whitesmoke;
+   margin: 0% 30% 2% 30%;
+   padding : 1%;
+   overflow: auto;
+   text-overflow: ellipsis;
+  }
+  .card:hover {
+    background: lightblue;
+  }
+  .submit_card {
+    margin: 0% 20% 5% 20%;
+    text-align: center;
+   
+    padding: 2%;
+    background: white;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.4),
+                0 6px 20px 0 rgba(0,0,0,0.36);
+  }
+  .text_colors {
+      color: grey;
+  }
+  </style>
+
+</head>
+<body  class="container-fluid">
+
+  {% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-info">
+    <strong>{{message}}</strong>
+  </div>
+  {% endfor %}
+  {% endif %}
+  
+  <center class="row">
+    <h1><i>WHAT TODO!</i></h1>
+    <hr />
+  </center>
+  <div  class="submit_card">
+    <form  method="POST">
+      {% csrf_token %}
+      {{forms|crispy}}
+      <center>
+    <br />
+      <input type="submit" class="btn btn-default" value="Submit" />
+    </center>
+    </form>
+  </div>
+    <center>
+    <h1> To Do </h1> You have {{num_tasks}} task(s) to do.
+    </center>
+    <hr />
+    {% for i in list %}
+      {% if not i.completed %}
+      <div class="card">
+        <strong>Task Description: </strong> {{i.description}}<hr />
+        <strong>Due Date: </strong>{{i.due_date}} at {{i.due_date_time}} <hr />
+        <br />
+        <br />
+        <form action="/complete/{{i.id}}" method="POST" style=" padding-right: 2%; padding-bottom: 3%;">
+          {% csrf_token %}
+          <button value="complete" type="submit"  class="btn btn-success" style="float: right;"><span class="glyphicon glyphicon-ok"></span> &nbsp; Complete</button>
+        </form>
+        <form action="/del/{{i.id}}" method="POST" style=" padding-right: 2%; padding-bottom: 3%; padding-top: 2%;">
+          {% csrf_token %}
+          <button value="remove" type="submit"  class="btn btn-danger" style="float: right;"><span class="glyphicon glyphicon-trash"></span> &nbsp; Remove</button>
+        </form>
+      </div>
+      {% endif %}
+    {% endfor %}
+    <center>
+    <h1> Completed </h1> You have completed {{completed_tasks}} task(s)!
+    </center>
+    <hr />
+    {% for i in list %}
+      {% if i.completed %}
+      <div class="card">
+        <strong>Task Description: </strong> {{i.description}}<hr />
+        <strong>Due Date: </strong>{{i.due_date}} at {{i.due_date_time}} <hr />  
+        <br />
+        <br />
+        <form action="/del/{{i.id}}" method="POST" style=" padding-right: 2%; padding-bottom: 3%;">
+          {% csrf_token %}
+          <button value="remove" type="submit"  class="btn btn-danger" style="float: right;"><span class="glyphicon glyphicon-trash"></span> &nbsp; Remove</button>
+        </form>
+      </div>
+    </div>
+      {% endif %}
+    {% endfor %}
+</body>
+</html>
